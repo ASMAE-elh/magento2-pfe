@@ -1,0 +1,14 @@
+<?php /** @var \MonEntreprise\MonModule\Block\Product\View $block */ ?>
+
+<div style="padding: 30px;">
+    <?php $product = $block->getProduct(); ?>
+
+    <?php if ($product): ?>
+        <h1><?= $block->escapeHtml($product->getName()) ?></h1>
+        <p><strong>ID :</strong> <?= (int) $product->getId() ?></p>
+        <p><strong>SKU :</strong> <?= $block->escapeHtml($product->getSku()) ?></p>
+        <p><strong>Prix :</strong> <?= (float) $product->getPrice() ?> €</p>
+    <?php else: ?>
+        <p>Produit introuvable.</p>
+    <?php endif; ?>
+</div>

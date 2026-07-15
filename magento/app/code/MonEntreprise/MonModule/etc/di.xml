@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+
+    <!-- Override de Product -->
+    <preference for="Magento\Catalog\Model\Product"
+                type="MonEntreprise\MonModule\Model\Product"/>
+
+    <!-- Plugin sur le nom du produit -->
+    <type name="Magento\Catalog\Model\Product">
+        <plugin name="monentreprise_product_name"
+                type="MonEntreprise\MonModule\Plugin\Product\NamePlugin"
+                sortOrder="10"/>
+    </type>
+
+    <!-- Plugin de validation des notes -->
+    <type name="MonEntreprise\MonModule\Model\NoteRepository">
+        <plugin name="monentreprise_validate_note"
+                type="MonEntreprise\MonModule\Plugin\Note\ValidateNotePlugin"
+                sortOrder="10"/>
+    </type>
+
+</config>

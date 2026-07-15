@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <shipping>
+            <preferred_date>
+                <min_days>5</min_days>
+            </preferred_date>
+        </shipping>
+    </default>
+</config>

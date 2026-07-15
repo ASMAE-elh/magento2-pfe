@@ -1,0 +1,84 @@
+<?xml version="1.0"?>
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+
+    <table name="carhartt_stock_notification" resource="default" engine="innodb"
+           comment="Carhartt Stock Notification Table">
+
+        <column xsi:type="int" name="entity_id" unsigned="true" nullable="false" identity="true"
+                comment="Entity ID"/>
+
+        <column xsi:type="int" name="customer_id" unsigned="true" nullable="true"
+                comment="Customer ID"/>
+
+        <column xsi:type="varchar" name="customer_email" length="255" nullable="false"
+                comment="Customer Email"/>
+
+        <column xsi:type="int" name="product_id" unsigned="true" nullable="false"
+                comment="Product ID"/>
+
+        <column xsi:type="varchar" name="product_sku" length="255" nullable="false"
+                comment="Product SKU"/>
+
+        <column xsi:type="smallint" name="store_id" unsigned="true" nullable="false"
+                comment="Store ID"/>
+
+        <column xsi:type="varchar" name="status" length="255" nullable="false"
+                comment="Status Notification"/>
+
+        <column xsi:type="timestamp" name="created_at" on_update="false" nullable="false"
+                default="CURRENT_TIMESTAMP" comment="Created At"/>
+
+        <!-- Primary Key -->
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="entity_id"/>
+        </constraint>
+
+        <!-- Foreign Key to customer_entity -->
+        <constraint xsi:type="foreign"
+                    referenceId="CARHARTT_STOCK_NOTIFICATION_CUSTOMER_ID_CUSTOMER_ENTITY_ID"
+                    table="carhartt_stock_notification"
+                    column="customer_id"
+                    referenceTable="customer_entity"
+                    referenceColumn="entity_id"
+                    onDelete="SET NULL"/>
+
+        <!-- Foreign Key to catalog_product_entity -->
+        <constraint xsi:type="foreign"
+                    referenceId="CARHARTT_STOCK_NOTIFICATION_PRODUCT_ID_PRODUCT_ENTITY_ID"
+                    table="carhartt_stock_notification"
+                    column="product_id"
+                    referenceTable="catalog_product_entity"
+                    referenceColumn="entity_id"
+                    onDelete="CASCADE"/>
+
+        <!-- Foreign Key to store -->
+        <constraint xsi:type="foreign"
+                    referenceId="CARHARTT_STOCK_NOTIFICATION_STORE_ID_STORE_STORE_ID"
+                    table="carhartt_stock_notification"
+                    column="store_id"
+                    referenceTable="store"
+                    referenceColumn="store_id"
+                    onDelete="CASCADE"/>
+
+        <!-- Indexes -->
+        <index referenceId="CARHARTT_STOCK_NOTIFICATION_CUSTOMER_ID" indexType="btree">
+            <column name="customer_id"/>
+        </index>
+
+        <index referenceId="CARHARTT_STOCK_NOTIFICATION_PRODUCT_ID" indexType="btree">
+            <column name="product_id"/>
+        </index>
+
+        <index referenceId="CARHARTT_STOCK_NOTIFICATION_STORE_ID" indexType="btree">
+            <column name="store_id"/>
+        </index>
+
+        <index referenceId="CARHARTT_STOCK_NOTIFICATION_EMAIL_PRODUCT_SKU_STATUS" indexType="fulltext">
+            <column name="customer_email"/>
+            <column name="product_sku"/>
+            <column name="status"/>
+        </index>
+
+    </table>
+</schema>

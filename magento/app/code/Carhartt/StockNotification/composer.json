@@ -1,0 +1,19 @@
+{
+    "name": "carhartt/stocknotification",
+    "description": "N/A",
+    "config": {
+        "sort-packages": true
+    },
+    "type": "magento2-module",
+    "license": [
+        "proprietary"
+    ],
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "Carhartt\\StockNotification\\": ""
+        }
+    }
+}

@@ -1,0 +1,20 @@
+/* Cacher seulement la progress bar */
+.opc-progress-bar { display: none !important; }
+
+/* Afficher toutes les étapes en même temps */
+.opc-wrapper .step-title { display: block !important; }
+.opc-wrapper .step-content { 
+    display: block !important; 
+    height: auto !important;
+    overflow: visible !important;
+}
+
+/* Forcer la visibilité des deux étapes */
+#checkout-step-shipping { display: block !important; }
+#checkout-step-payment { display: block !important; }
+
+.opc-wrapper li.checkout-shipping-address,
+.opc-wrapper li.checkout-shipping-method,
+.opc-wrapper li.checkout-payment-method {
+    display: block !important;
+}

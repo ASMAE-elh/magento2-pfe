@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+    <table name="monentreprise_note" resource="default" engine="innodb" comment="Notes Table">
+        <column xsi:type="int" name="note_id" unsigned="true" nullable="false" identity="true" comment="Note ID"/>
+        <column xsi:type="varchar" name="title" nullable="false" length="255" comment="Note Title"/>
+        <column xsi:type="text" name="content" nullable="true" comment="Note Content"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="note_id"/>
+        </constraint>
+    </table>
+</schema>

@@ -1,0 +1,172 @@
+<?php
+/**
+ * Hero slider - page d'accueil, inspiré du style Edwin Europe
+ */
+
+use Hyva\Theme\ViewModel\HyvaCsp;
+use Hyva\Theme\Model\ViewModelRegistry;
+use Magento\Framework\View\Element\Template;
+use Magento\Framework\Escaper;
+
+/** @var Template $block */
+/** @var Escaper $escaper */
+/** @var ViewModelRegistry $viewModels */
+
+/** @var HyvaCsp $hyvaCsp */
+$hyvaCsp = $viewModels->require(HyvaCsp::class);
+
+// --- Configuration des slides ---
+// Modifie ce tableau pour changer les images, titres, textes et liens.
+$slides = [
+    [
+        'image'    => $block->getViewFileUrl('images/home/slide-1.jpg'),
+        'eyebrow'  => __('New Collection'),
+        'title'    => __('Denim Redefined'),
+        'subtitle' => __('Discover the new season selvedge denim collection.'),
+        'cta_text' => __('Shop Now'),
+        'cta_url'  => $block->getUrl('men.html'),
+    ],
+    [
+        'image'    => $block->getViewFileUrl('images/home/slide-2.jpg'),
+        'eyebrow'  => __('Womenswear'),
+        'title'    => __('Effortless Style'),
+        'subtitle' => __('Explore the women\'s collection, made to last.'),
+        'cta_text' => __('Discover'),
+        'cta_url'  => $block->getUrl('women.html'),
+    ],
+    [
+        'image'    => $block->getViewFileUrl('images/home/slide-3.jpg'),
+        'eyebrow'  => __('Sale'),
+        'title'    => __('Up to 40% Off'),
+        'subtitle' => __('Selected styles, while stocks last.'),
+        'cta_text' => __('Shop the Sale'),
+        'cta_url'  => $block->getUrl('sale.html'),
+    ],
+];
+?>
+<div
+    x-data="initHeroSlider(<?= (int) count($slides) ?>)"
+    x-init="init()"
+    class="relative w-full overflow-hidden bg-gray-900"
+    style="aspect-ratio: 16 / 7; min-height: 320px;"
+    aria-roledescription="carousel"
+    aria-label="<?= $escaper->escapeHtmlAttr(__('Homepage highlights')) ?>"
+>
+    <?php foreach ($slides as $i => $slide): ?>
+        <div
+            x-show="current === <?= (int) $i ?>"
+            x-transition:enter="transition ease-out duration-700"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            x-transition:leave="transition ease-in duration-500"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+            class="absolute inset-0"
+            x-cloak
+        >
+            <img
+                src="<?= $escaper->escapeUrl($slide['image']) ?>"
+                alt="<?= $escaper->escapeHtmlAttr($slide['title']) ?>"
+                class="w-full h-full object-cover"
+                <?= $i === 0 ? 'fetchpriority="high"' : 'loading="lazy"' ?>
+            />
+            <div class="absolute inset-0 bg-black/30"></div>
+
+            <div class="absolute inset-0 flex items-center">
+                <div class="max-w-[1280px] w-full mx-auto px-8">
+                    <div class="max-w-md text-white">
+                        <span class="block text-sm uppercase tracking-widest mb-3 text-white/80">
+                            <?= $escaper->escapeHtml($slide['eyebrow']) ?>
+                        </span>
+                        <h2 class="text-4xl md:text-5xl font-semibold mb-4 leading-tight">
+                            <?= $escaper->escapeHtml($slide['title']) ?>
+                        </h2>
+                        <p class="text-base md:text-lg mb-6 text-white/90">
+                            <?= $escaper->escapeHtml($slide['subtitle']) ?>
+                        </p>
+                        <a
+                            href="<?= $escaper->escapeUrl($slide['cta_url']) ?>"
+                            class="inline-block bg-white text-gray-900 px-6 py-3 text-sm uppercase tracking-wide font-medium
+                                   hover:bg-gray-100 transition-colors duration-200"
+                        >
+                            <?= $escaper->escapeHtml($slide['cta_text']) ?>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <?php endforeach; ?>
+
+    <?php if (count($slides) > 1): ?>
+        <!-- Flèches précédent/suivant -->
+        <button
+            @click="prev"
+            type="button"
+            class="absolute left-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 flex items-center justify-center
+                   rounded-full bg-white/20 hover:bg-white/40 text-white transition-colors"
+            aria-label="<?= $escaper->escapeHtmlAttr(__('Previous slide')) ?>"
+        >
+            <span aria-hidden="true">&#8592;</span>
+        </button>
+        <button
+            @click="next"
+            type="button"
+            class="absolute right-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 flex items-center justify-center
+                   rounded-full bg-white/20 hover:bg-white/40 text-white transition-colors"
+            aria-label="<?= $escaper->escapeHtmlAttr(__('Next slide')) ?>"
+        >
+            <span aria-hidden="true">&#8594;</span>
+        </button>
+
+        <!-- Indicateurs -->
+        <div class="absolute bottom-5 left-1/2 -translate-x-1/2 z-10 flex gap-2">
+            <template x-for="i in totalSlides" :key="i">
+                <button
+                    @click="goTo(i - 1)"
+                    type="button"
+                    class="w-2.5 h-2.5 rounded-full transition-colors"
+                    :class="current === (i - 1) ? 'bg-white' : 'bg-white/40 hover:bg-white/70'"
+                    :aria-label="'Slide ' + i"
+                ></button>
+            </template>
+        </div>
+    <?php endif; ?>
+</div>
+
+<script>
+    function initHeroSlider(totalSlides) {
+        return {
+            current: 0,
+            totalSlides: totalSlides,
+            timer: null,
+            init() {
+                this.startAutoplay();
+            },
+            startAutoplay() {
+                if (this.totalSlides <= 1) return;
+                this.timer = setInterval(() => this.next(), 6000);
+            },
+            resetAutoplay() {
+                clearInterval(this.timer);
+                this.startAutoplay();
+            },
+            next() {
+                this.current = (this.current + 1) % this.totalSlides;
+                this.resetAutoplay();
+            },
+            prev() {
+                this.current = (this.current - 1 + this.totalSlides) % this.totalSlides;
+                this.resetAutoplay();
+            },
+            goTo(index) {
+                this.current = index;
+                this.resetAutoplay();
+            }
+        }
+    }
+
+    window.addEventListener('alpine:init', () => {
+        Alpine.data('initHeroSlider', initHeroSlider);
+    }, { once: true })
+</script>
+<?php $hyvaCsp->registerInlineScript() ?>

@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <tab id="chaymae" translate="label" sortOrder="200">
+            <label>Chaymae</label>
+        </tab>
+        <section id="chaymae_aichat" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>AI Chat</label>
+            <tab>chaymae</tab>
+            <resource>Chaymae_AiChat::config</resource>
+            <group id="general" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Parametres generaux</label>
+                <field id="enabled" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Activer le chat AI</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="api_key" translate="label" type="obscure" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Cle API OpenAI</label>
+                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
+                    <comment>Cle secrete OpenAI (sk-...). Elle est chiffree.</comment>
+                </field>
+                <field id="model" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Modele OpenAI</label>
+                    <comment>Exemple: gpt-4o-mini</comment>
+                </field>
+                <field id="system_prompt" translate="label" type="textarea" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Prompt systeme</label>
+                    <comment>Instructions donnees a l'IA avant chaque conversation.</comment>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>

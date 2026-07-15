@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceBlock name="product.info.addtocart">
+            <block class="Magento\ConfigurableProduct\Block\Product\View\Type\Configurable"
+                   name="carhartt.stocknotification.notifyme"
+                   template="Carhartt_StockNotification::product/view/notify-me.phtml"
+                   after="-"/>
+        </referenceBlock>
+        <referenceBlock name="product.info.stockstatus" remove="true"/>
+        <referenceBlock name="product.info">
+            <block class="Magento\ConfigurableProduct\Block\Product\View\Type\Configurable"
+                   name="carhartt.stocknotification.dynamicstock"
+                   template="Carhartt_StockNotification::product/view/dynamic-stock-status.phtml"/>
+        </referenceBlock>
+    </body>
+</page>

@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <carhartt_stocknotification>
+            <general>
+                <enabled>1</enabled>
+                <template_product_is_saleable>carhartt_stocknotification_general_template_product_is_saleable</template_product_is_saleable>
+                <template_subscription_confirmation>carhartt_stocknotification_general_template_subscription_confirmation</template_subscription_confirmation>
+            </general>
+        </carhartt_stocknotification>
+    </default>
+</config>

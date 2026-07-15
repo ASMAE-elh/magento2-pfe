@@ -1,0 +1,14 @@
+<?php
+$order = $block->getOrder();
+$date  = $order->getData('preferred_shipping_date');
+?>
+<?php if ($date): ?>
+<section class="admin__page-section order-shipping-date">
+    <div class="admin__page-section-title">
+        <span class="title"><?= $block->escapeHtml(__('Preferred Shipping Date')) ?></span>
+    </div>
+    <div class="admin__page-section-content">
+        <p><strong><?= $block->escapeHtml($date) ?></strong></p>
+    </div>
+</section>
+<?php endif; ?>

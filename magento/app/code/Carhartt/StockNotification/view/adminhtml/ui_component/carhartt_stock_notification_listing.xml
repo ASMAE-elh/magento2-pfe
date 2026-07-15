@@ -1,0 +1,207 @@
+<?xml version="1.0"?>
+<listing xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+
+    <!-- main part of the grid -->
+    <argument name="data" xsi:type="array">
+        <!-- define where to find the date source -->
+        <item name="js_config" xsi:type="array">
+            <item name="provider" xsi:type="string">carhartt_stock_notification_listing.carhartt_stock_notification_listing_data_source</item>
+            <item name="deps" xsi:type="string">carhartt_stock_notification_listing.carhartt_stock_notification_listing_data_source</item>
+        </item>
+        <!-- define where to find the columns -->
+        <item name="spinner" xsi:type="string">carhartt_stock_notification_columns</item>
+
+    </argument>
+
+    <!-- define the date source (must be the same than in argument/item/provider and argument/js_config/deps -->
+    <dataSource name="carhartt_stock_notification_listing_data_source">
+        <argument name="dataProvider" xsi:type="configurableObject">
+            <!-- unique name for the grid -->
+            <argument name="class" xsi:type="string">Carhartt\StockNotification\Ui\DataProvider\Notification\DataProvider</argument>
+
+            <!-- name of the data source same as in argument/js_config/provider -->
+            <argument name="name" xsi:type="string">carhartt_stock_notification_listing_data_source</argument>
+            <argument name="primaryFieldName" xsi:type="string">entity_id</argument>
+            <argument name="requestFieldName" xsi:type="string">id</argument>
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="component" xsi:type="string">Magento_Ui/js/grid/provider</item>
+                    <item name="update_url" xsi:type="url" path="mui/index/render"/>
+                    <item name="storageConfig" xsi:type="array">
+                        <item name="indexField" xsi:type="string">entity_id</item>
+                    </item>
+                </item>
+            </argument>
+        </argument>
+    </dataSource>
+
+    <listingToolbar name="listing_top">
+        <argument name="data" xsi:type="array">
+            <item name="config" xsi:type="array">
+                <item name="sticky" xsi:type="boolean">true</item>
+            </item>
+        </argument>
+        <bookmark name="bookmarks"/>
+        <!--This node will add a columns list box which allow the admin user can choose which columns can be shown up on grid.
+         After changing this list, admin can save that state as a bookmark which allow to access this state quickly.-->
+        <columnsControls name="columns_controls"/>
+        <!--This node will add a search box at the top of Grid. You can use this to search all the data in the table.-->
+        <filterSearch name="fulltext">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="provider" xsi:type="string">carhartt_stock_notification_listing.carhartt_stock_notification_listing_data_source</item>
+                    <item name="chipsProvider" xsi:type="string">carhartt_stock_notification_listing.carhartt_stock_notification_listing.listing_top.listing_filters_chips</item>
+                    <item name="storageConfig" xsi:type="array">
+                        <item name="provider" xsi:type="string">carhartt_stock_notification_listing.carhartt_stock_notification_listing.listing_top.bookmarks</item>
+                        <item name="namespace" xsi:type="string">current.search</item>
+                    </item>
+                </item>
+            </argument>
+        </filterSearch>
+
+        <!--This node define the filter box for each column. You can see this by click to the Filter button at the top of the grid.-->
+        <filters name="listing_filters">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="templates" xsi:type="array">
+                        <item name="filters" xsi:type="array">
+                            <item name="select" xsi:type="array">
+                                <item name="component" xsi:type="string">Magento_Ui/js/form/element/ui-select</item>
+                                <item name="template" xsi:type="string">ui/grid/filters/elements/ui-select</item>
+                            </item>
+                        </item>
+                    </item>
+                </item>
+            </argument>
+            <filterSelect name="store_id">
+                <argument name="optionsProvider" xsi:type="configurableObject">
+                    <argument name="class" xsi:type="string">Magento\Cms\Ui\Component\Listing\Column\Cms\Options</argument>
+                </argument>
+                <argument name="data" xsi:type="array">
+                    <item name="config" xsi:type="array">
+                        <item name="provider" xsi:type="string">${ $.parentName }</item>
+                        <item name="imports" xsi:type="array">
+                            <item name="visible" xsi:type="string">componentType = column, index = ${ $.index }:visible</item>
+                        </item>
+                        <item name="dataScope" xsi:type="string">store_id</item>
+                        <item name="label" xsi:type="string" translate="true">Store View</item>
+                        <item name="captionValue" xsi:type="string">0</item>
+                    </item>
+                </argument>
+            </filterSelect>
+        </filters>
+        <!--This node will add the pagination for the grid. This is useful if you have a large of data in the table.-->
+        <paging name="listing_paging"/>
+        <!--This node will add an export button which you can export the data of the grid.-->
+        <exportButton name="export_button"/>
+    </listingToolbar>
+
+    <!-- define the columns of my grid -->
+    <columns name="carhartt_stock_notification_columns">
+
+        <argument name="data" xsi:type="array">
+            <item name="config" xsi:type="array">
+                <!-- Bookmarks behaviour -->
+                <item name="storageConfig" xsi:type="array">
+                    <item name="provider" xsi:type="string">carhartt_stock_notification_listing.carhartt_stock_notification_listing.listing_top.bookmarks</item>
+                    <item name="namespace" xsi:type="string">current</item>
+                </item>
+                <item name="childDefaults" xsi:type="array">
+                    <item name="controlVisibility" xsi:type="boolean">true</item>
+                    <item name="storageConfig" xsi:type="array">
+                        <item name="provider" xsi:type="string">carhartt_stock_notification_listing.carhartt_stock_notification_listing.listing_top.bookmarks</item>
+                        <item name="root" xsi:type="string">columns.${ $.index }</item>
+                        <item name="namespace" xsi:type="string">current.${ $.storageConfig.root}</item>
+                    </item>
+                </item>
+            </item>
+        </argument>
+        <!--Id -->
+        <selectionsColumn name="ids" sortOrder="10">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <!-- define which field will be used as ID -->
+                    <item name="indexField" xsi:type="string">entity_id</item>
+                    <item name="sortOrder" xsi:type="number">10</item>
+
+                </item>
+            </argument>
+        </selectionsColumn>
+
+        <!-- Product Id -->
+        <column name="product_id" >
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="filter" xsi:type="string">textRange</item>
+                    <item name="sorting" xsi:type="string">asc</item>
+                    <item name="label" xsi:type="string" translate="true">Product ID</item>
+                </item>
+            </argument>
+        </column>
+
+        <!-- Product Sku -->
+        <column name="product_sku" >
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="visible" xsi:type="boolean">true</item>
+                    <item name="dataType" xsi:type="string">text</item>
+                    <item name="dataScope" xsi:type="string">name</item>
+                    <item name="label" xsi:type="string" translate="true">Product Sku</item>
+                    <item name="filter" xsi:type="string">text</item>
+                </item>
+            </argument>
+        </column>
+
+        <!-- Email Address-->
+        <column name="customer_email" >
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="visible" xsi:type="boolean">true</item>
+                    <item name="dataType" xsi:type="string">text</item>
+                    <item name="dataScope" xsi:type="string">email</item>
+                    <item name="label" xsi:type="string" translate="true">Email Address</item>
+                    <item name="filter" xsi:type="string">text</item>
+                </item>
+            </argument>
+        </column>
+
+        <!-- Status -->
+        <column name="status">
+            <argument name="data" xsi:type="array">
+                <item name="options" xsi:type="object">Carhartt\StockNotification\Model\Config\Source\StatusOptions</item>
+                <item name="config" xsi:type="array">
+                    <item name="filter" xsi:type="string">select</item>
+                    <item name="component" xsi:type="string">Magento_Ui/js/grid/columns/select</item>
+                    <item name="dataType" xsi:type="string">select</item>
+                    <item name="bodyTmpl" xsi:type="string">ui/grid/cells/html</item>
+                    <item name="label" xsi:type="string" translate="true">Status</item>
+
+                </item>
+            </argument>
+        </column>
+
+        <!-- Store id -->
+        <column name="store_id" class="Magento\Store\Ui\Component\Listing\Column\Store" >
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="bodyTmpl" xsi:type="string">ui/grid/cells/html</item>
+                    <item name="sortable" xsi:type="boolean">false</item>
+                    <item name="label" xsi:type="string" translate="true">Store View</item>
+                </item>
+            </argument>
+        </column>
+
+        <!-- Created At-->
+        <column name="created_at" class="Magento\Ui\Component\Listing\Columns\Date" >
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="filter" xsi:type="string">dateRange</item>
+                    <item name="component" xsi:type="string">Magento_Ui/js/grid/columns/date</item>
+                    <item name="dataType" xsi:type="string">date</item>
+                    <item name="label" xsi:type="string" translate="true">Date</item>
+                </item>
+            </argument>
+        </column>
+    </columns>
+</listing>

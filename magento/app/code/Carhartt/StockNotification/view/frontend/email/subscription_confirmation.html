@@ -1,0 +1,83 @@
+<!--
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<!--@subject {{trans "Carhartt WIP – We'll notify you"}} @-->
+
+{{template config_path="design/email/header_template"}}
+
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#ffffff; font-family: Helvetica, Arial, sans-serif;">
+    <tr>
+        <td>
+            <table width="650" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                    <td>
+                        <h1 style="width: 450px; font-family: Helvetica, Arial, sans-serif;
+                                   font-size:36px; font-weight:700; line-height:110%; color:#000000; margin:0 0 30px 0;">
+                            You're on the list
+                        </h1>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding-bottom:30px;">
+                        <p style="font-family: Helvetica, Arial, sans-serif; font-size:14px; line-height:22px; color:#333333; margin:0;">
+                            Thanks for your interest! This item is currently out of stock, but we'll send you
+                            another email as soon as it's back and ready to order.
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <table width="680" height="680" cellpadding="0" cellspacing="0" border="0"
+                               style="background:#F3F3F3; display:block; overflow:hidden;">
+                            <tr>
+                                <td valign="middle">
+                                    <img src="{{var data.product_image}}"
+                                         alt="{{var data.product_name}}"
+                                         style="width:680px; height:auto; max-height:680px; object-fit:contain; display:block;">
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding-top:10px;">
+                        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                            <tr>
+                                <td>
+                                    <h1 style="width:565px; font-family:'Helvetica Neue', Helvetica, Arial, sans-serif;
+                                               font-weight:700; font-size:14px; line-height:22px; margin:0;">
+                                        <span style="display:block;">
+                                           <a href="{{var data.product_url}}"
+                                              style="font-weight:700; font-size:14px; line-height:30px; color:#000; margin-right:5px; text-decoration:none;">
+                                               {{var data.product_name}}
+                                           </a>
+                                            <span style="font-weight:700; font-size:14px; line-height:30px; color:#000; margin-right:5px;">
+                                                {{var data.material_short_description}}
+                                            </span>
+                                            <span style="font-size:14px; font-weight:700; color:#999999; line-height:22px;">
+                                                {{var data.item_number}}
+                                            </span>
+                                        </span>
+                                        <span style="display:block;">
+                                            <span style="font-weight:700; font-size:14px; line-height:22px; color:#000;">
+                                                {{var data.colour_description}}
+                                            </span>
+                                            <span style="font-size:14px; font-weight:700; color:#999999; margin-left:6px; line-height:22px;">
+                                                {{var data.colour_code}}{{var data.finish_code}}
+                                            </span>
+                                        </span>
+                                    </h1>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+
+{{template config_path="design/email/footer_template"}}

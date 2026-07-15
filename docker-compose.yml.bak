@@ -1,0 +1,83 @@
+version: '3'
+services:
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: mailhog
+    restart: always
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    networks:
+      - magento
+  web:
+    image: webdevops/php-apache-dev:8.4
+    container_name: web
+    restart: always
+    environment:
+      - WEB_DOCUMENT_ROOT=/app/pub
+      - PHP_DATE_TIMEZONE=EST
+      - PHP_DISPLAY_ERRORS=1
+      - PHP_MEMORY_LIMIT=2048M
+      - PHP_MAX_EXECUTION_TIME=300
+      - PHP_POST_MAX_SIZE=500M
+      - PHP_UPLOAD_MAX_FILESIZE=1024M
+    volumes:
+      - ./magento:/app:cached
+    ports:
+      - "80:80"
+      - "443:443"
+      - "32823:22"
+    networks:
+      - magento
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    restart: always
+    environment:
+      - MYSQL_DATABASE=chaymae_magento
+      - MYSQL_ROOT_PASSWORD=root
+    volumes:
+      - db-data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    networks:
+      - magento
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: phpmyadmin
+    restart: always
+    environment:
+      - PMA_USER=root
+      - PMA_PASSWORD=root
+      - PMA_HOST=mysql
+      - MYSQL_ROOT_PASSWORD=root
+    ports:
+      - "8080:80"
+    depends_on:
+      - mysql
+    networks:
+      - magento
+  opensearch:
+    image: opensearchproject/opensearch:2.12.0
+    container_name: opensearch
+    restart: always
+    environment:
+      - discovery.type=single-node
+      - DISABLE_SECURITY_PLUGIN=true
+      - OPENSEARCH_JAVA_OPTS=-Xms1g -Xmx1g
+    networks:
+      - magento
+  vision:
+    build:
+      context: ./vision
+    container_name: vision
+    restart: always
+    ports:
+      - "8000:8000"
+    networks:
+      - magento
+volumes:
+  db-data:
+  es-data:
+networks:
+  magento:

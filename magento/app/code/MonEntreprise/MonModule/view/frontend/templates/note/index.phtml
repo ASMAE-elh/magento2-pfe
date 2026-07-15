@@ -1,0 +1,35 @@
+<?php /** @var \MonEntreprise\MonModule\Block\Note\Index $block */ ?>
+
+<div style="padding: 30px;">
+    <h1>Liste des Notes</h1>
+    <a href="<?= $block->getUrl('monmodule/note/create') ?>"
+       style="background:#e07b39;color:white;padding:10px 20px;text-decoration:none;border-radius:4px;">
+        + Nouvelle Note
+    </a>
+
+    <table style="width:100%;margin-top:20px;border-collapse:collapse;">
+        <thead>
+        <tr style="background:#f5f5f5;">
+            <th style="padding:10px;border:1px solid #ddd;">ID</th>
+            <th style="padding:10px;border:1px solid #ddd;">Titre</th>
+            <th style="padding:10px;border:1px solid #ddd;">Contenu</th>
+            <th style="padding:10px;border:1px solid #ddd;">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <?php foreach ($block->getNotes() as $note): ?>
+            <tr>
+                <td style="padding:10px;border:1px solid #ddd;"><?= (int) $note->getNoteId() ?></td>
+                <td style="padding:10px;border:1px solid #ddd;"><?= $block->escapeHtml($note->getTitle()) ?></td>
+                <td style="padding:10px;border:1px solid #ddd;"><?= $block->escapeHtml($note->getContent()) ?></td>
+                <td style="padding:10px;border:1px solid #ddd;">
+                    <a href="<?= $block->getUrl('monmodule/note/create', ['id' => $note->getNoteId()]) ?>">✏️ Modifier</a>
+                    &nbsp;|&nbsp;
+                    <a href="<?= $block->getUrl('monmodule/note/delete', ['id' => $note->getNoteId()]) ?>"
+                       onclick="return confirm('Supprimer cette note ?')">🗑️ Supprimer</a>
+                </td>
+            </tr>
+        <?php endforeach; ?>
+        </tbody>
+    </table>
+</div>

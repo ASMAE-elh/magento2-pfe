@@ -1,0 +1,8 @@
+<?xml version="1.0" ?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Cron:etc/crontab.xsd">
+    <group id="stock_notification">
+        <job instance="Carhartt\StockNotification\Cron\Notification" method="execute" name="carhartt_stock_notification_cron">
+            <schedule>* 7 * * *</schedule>
+        </job>
+    </group>
+</config>

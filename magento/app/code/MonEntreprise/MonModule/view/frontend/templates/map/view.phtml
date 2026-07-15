@@ -1,0 +1,21 @@
+<?php /** @var \MonEntreprise\MonModule\Block\Map\View $block */ ?>
+
+<div style="padding: 30px;">
+    <h1>Notre localisation</h1>
+
+    <?php $mapUrl = $block->getMapUrl(); ?>
+
+    <?php if ($mapUrl): ?>
+        <iframe
+            src="<?= $block->escapeHtmlAttr($mapUrl) ?>"
+            width="100%"
+            height="450"
+            style="border:0;"
+            allowfullscreen=""
+            loading="lazy">
+        </iframe>
+    <?php else: ?>
+        <p>Aucune carte configurée. Veuillez configurer l'URL dans
+            Stores → Configuration → Mon Module → Google Maps.</p>
+    <?php endif; ?>
+</div>

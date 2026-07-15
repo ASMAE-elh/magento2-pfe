@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
+
+    <event name="catalog_product_save_after">
+        <observer name="monentreprise_monmodule_product_save"
+                  instance="MonEntreprise\MonModule\Observer\ProductSaveObserver"/>
+    </event>
+
+    <event name="monmodule_product_viewed">
+        <observer name="monentreprise_monmodule_product_viewed"
+                  instance="MonEntreprise\MonModule\Observer\ProductViewedObserver"/>
+    </event>
+
+    <!-- Notre nouvel event pour les notes -->
+    <event name="after_note_saved">
+        <observer name="monentreprise_monmodule_after_note_saved"
+                  instance="MonEntreprise\MonModule\Observer\AfterNoteSavedObserver"/>
+    </event>
+
+</config>

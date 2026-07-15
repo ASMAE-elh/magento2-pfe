@@ -1,0 +1,128 @@
+<?php
+declare(strict_types=1);
+
+use Magento\ConfigurableProduct\Block\Product\View\Type\Configurable;
+use Magento\Framework\Escaper;
+
+/** @var Configurable $block */
+/** @var Escaper $escaper */
+
+$product = $block->getProduct();
+if (!$product || !$product->getId()) {
+    return;
+}
+
+$productId = (int) $product->getId();
+$isConfigurable = $product->getTypeId() === \Magento\ConfigurableProduct\Model\Product\Type\Configurable::TYPE_CODE;
+$attributes = $isConfigurable ? $block->decorateArray($block->getAllowAttributes()) : [];
+$attributeCount = count($attributes);
+$jsonConfig = $isConfigurable ? $block->getJsonConfig() : '{}';
+?>
+<script>
+    function initStockNotify_<?= $productId ?>() {
+        return {
+            isConfigurable: <?= $isConfigurable ? 'true' : 'false' ?>,
+            productId: <?= $productId ?>,
+            attributeCount: <?= $attributeCount ?>,
+            optionConfig: <?= /* @noEscape */ $jsonConfig ?>,
+            selectedValues: {},
+            selectedProductId: <?= $isConfigurable ? 'null' : $productId ?>,
+            submitting: false,
+            submitted: false,
+            errorMessage: '',
+            showButton: false,
+            init() {
+                if (this.isConfigurable) {
+                    window.addEventListener('configurable-selection-changed', (event) => {
+                        if (parseInt(event.detail.productId) !== this.productId) return;
+                        this.selectedValues = event.detail.selectedValues || {};
+                        this.selectedProductId = event.detail.productIndex || null;
+                        this.submitted = false;
+                        this.errorMessage = '';
+                        this.refreshVisibility();
+                    });
+                }
+                this.refreshVisibility();
+            },
+            refreshVisibility() {
+                this.showButton = this.computeShouldShowButton();
+            },
+            isFullySelected() {
+                return !this.isConfigurable || Object.keys(this.selectedValues).length === this.attributeCount;
+            },
+            getSalableIds() {
+                const salable = this.optionConfig.salable || {};
+                const ids = new Set();
+                Object.values(salable).forEach((byOption) => {
+                    Object.values(byOption).forEach((arr) => (arr || []).forEach((id) => ids.add(String(id))));
+                });
+                return ids;
+            },
+            computeShouldShowButton() {
+                if (!this.isFullySelected()) return false;
+                if (!this.selectedProductId) return false;
+                if (Object.keys(this.optionConfig.salable || {}).length === 0) {
+                    return <?= $product->isSaleable() ? 'false' : 'true' ?>;
+                }
+                return !this.getSalableIds().has(String(this.selectedProductId));
+            },
+            getFormKey() {
+                if (window.hyva && typeof hyva.getFormKey === 'function') {
+                    return hyva.getFormKey();
+                }
+                const match = document.cookie.match(/form_key=([^;]+)/);
+                return match ? decodeURIComponent(match[1]) : '';
+            },
+            submitNotify() {
+                this.submitting = true;
+                this.errorMessage = '';
+                fetch('<?= $escaper->escapeJs($block->getUrl('carhartt_stocknotification/ajax/submit')) ?>', {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({
+                        product_id: this.selectedProductId,
+                        form_key: this.getFormKey()
+                    })
+                })
+                    .then((r) => r.json())
+                    .then((data) => {
+                        this.submitting = false;
+                        const result = data && data.result;
+                        if (result && result.error) {
+                            this.errorMessage = result.message || '<?= $escaper->escapeJs(__('An error occurred. Please try again.')) ?>';
+                        } else {
+                            this.submitted = true;
+                        }
+                    })
+                    .catch(() => {
+                        this.submitting = false;
+                        this.errorMessage = '<?= $escaper->escapeJs(__('An error occurred. Please try again.')) ?>';
+                    });
+            }
+        };
+    }
+</script>
+
+<div x-data="initStockNotify_<?= $productId ?>()" class="mt-4 w-full clear-both">
+    <template x-if="showButton && !submitted">
+        <div class="border border-gray-300 rounded p-4 w-full">
+            <p class="mb-2 text-gray-700"><?= $escaper->escapeHtml(__('This item is currently out of stock.')) ?></p>
+            <button
+                type="button"
+                class="btn btn-primary w-full sm:w-auto"
+                :disabled="submitting"
+                @click="submitNotify()"
+            >
+                <span x-show="!submitting"><?= $escaper->escapeHtml(__('Notify Me')) ?></span>
+                <span x-show="submitting"><?= $escaper->escapeHtml(__('Sending...')) ?></span>
+            </button>
+            <p class="text-red-600 mt-2" x-show="errorMessage" x-text="errorMessage"></p>
+        </div>
+    </template>
+    <template x-if="submitted">
+        <p class="text-green-600">
+            <?= $escaper->escapeHtml(__("You'll be notified by email when this item is back in stock.")) ?>
+        </p>
+    </template>
+</div>

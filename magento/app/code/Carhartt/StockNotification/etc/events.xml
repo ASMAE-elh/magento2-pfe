@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
+    <event name="carhartt_import_products_after">
+        <observer name="carhartt_import_after_change_product_qty" instance="Carhartt\StockNotification\Observer\Product\NotifyCustomer" />
+    </event>
+    <event name="catalog_product_save_after">
+        <observer name="carhartt_send_notification_on_save" instance="Carhartt\StockNotification\Observer\Product\SendNotificationOnSave" />
+    </event>
+</config>

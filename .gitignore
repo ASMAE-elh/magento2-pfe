@@ -1,0 +1,21 @@
+# Magento generated directories
+/magento/vendor/
+/magento/generated/*
+/magento/var/
+/elasticsearch/nodes/*
+/magento/pub/static/*
+/magento/pub/media/*
+/magento/pub/*
+
+# Magento environment config
+/magento/app/etc/env.php
+
+# Node / frontend build
+/node_modules/
+/package-lock.json
+/yarn.lock
+
+# IDE / OS files
+.idea/
+*.iml
+.DS_Store

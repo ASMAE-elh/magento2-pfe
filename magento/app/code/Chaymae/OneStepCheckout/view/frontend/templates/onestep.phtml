@@ -1,0 +1,247 @@
+<?php
+/** @var \Chaymae\OneStepCheckout\Block\Checkout $block */
+$items = $block->getItems();
+$subtotal = $block->getSubtotal();
+?>
+<div x-data="{
+    loading: false,
+    shippingMethods: [],
+    form: {
+        email: '',
+        firstname: '',
+        lastname: '',
+        telephone: '',
+        street: '',
+        city: '',
+        postcode: '',
+        country_id: 'MA',
+        shipping_method: '',
+        payment_method: 'checkmo'
+    },
+    errors: {},
+    subtotal: <?= (float)$subtotal ?>,
+    shippingCost: 0,
+    get grandTotal() {
+        return (this.subtotal + this.shippingCost).toFixed(2);
+    },
+    async loadShippingMethods() {
+        const res = await fetch('/chaymae_osc/ajax/shippingmethods', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                country_id: this.form.country_id,
+                postcode: this.form.postcode,
+                city: this.form.city
+            })
+        });
+        const data = await res.json();
+        if (data.success && data.methods.length > 0) {
+            this.shippingMethods = data.methods;
+            this.form.shipping_method = data.methods[0].carrier_code + '_' + data.methods[0].method_code;
+            this.shippingCost = parseFloat(data.methods[0].amount);
+        }
+    },
+    selectShipping(method) {
+        this.form.shipping_method = method.carrier_code + '_' + method.method_code;
+        this.shippingCost = parseFloat(method.amount);
+    },
+    validate() {
+        this.errors = {};
+        if (!this.form.email) this.errors.email = true;
+        if (!this.form.firstname) this.errors.firstname = true;
+        if (!this.form.lastname) this.errors.lastname = true;
+        if (!this.form.street) this.errors.street = true;
+        if (!this.form.city) this.errors.city = true;
+        if (!this.form.postcode) this.errors.postcode = true;
+        if (!this.form.shipping_method) this.errors.shipping = true;
+        return Object.keys(this.errors).length === 0;
+    },
+    async placeOrder() {
+        if (!this.validate()) return;
+        this.loading = true;
+        try {
+            const res = await fetch('/chaymae_osc/ajax/placeorder', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(this.form)
+            });
+            const data = await res.json();
+            if (data.success) {
+                window.location.href = data.redirect;
+            } else {
+                alert('Erreur: ' + data.message);
+                this.loading = false;
+            }
+        } catch(e) {
+            alert('Erreur: ' + e.message);
+            this.loading = false;
+        }
+    }
+}" x-init="loadShippingMethods()">
+
+<div class="osc-page">
+<h1 class="osc-heading">Finaliser votre commande</h1>
+<div class="osc-grid">
+<div class="osc-left">
+
+<div class="osc-card">
+<div class="osc-card-header"><span class="osc-num">1</span><h2>Informations personnelles</h2></div>
+<div class="osc-card-body">
+<div class="osc-field">
+    <label class="osc-label">Email *</label>
+    <input type="email" x-model="form.email" placeholder="votre@email.com" class="osc-input" :class="errors.email ? 'osc-input-error' : ''">
+    <p x-show="errors.email" class="osc-err">Email requis</p>
+</div>
+<div class="osc-row">
+    <div class="osc-field">
+        <label class="osc-label">Prénom *</label>
+        <input type="text" x-model="form.firstname" placeholder="Prénom" class="osc-input" :class="errors.firstname ? 'osc-input-error' : ''">
+        <p x-show="errors.firstname" class="osc-err">Requis</p>
+    </div>
+    <div class="osc-field">
+        <label class="osc-label">Nom *</label>
+        <input type="text" x-model="form.lastname" placeholder="Nom" class="osc-input" :class="errors.lastname ? 'osc-input-error' : ''">
+        <p x-show="errors.lastname" class="osc-err">Requis</p>
+    </div>
+</div>
+<div class="osc-field">
+    <label class="osc-label">Téléphone</label>
+    <input type="tel" x-model="form.telephone" placeholder="+212 6 00 00 00 00" class="osc-input">
+</div>
+</div></div>
+
+<div class="osc-card">
+<div class="osc-card-header"><span class="osc-num">2</span><h2>Adresse de livraison</h2></div>
+<div class="osc-card-body">
+<div class="osc-field">
+    <label class="osc-label">Rue *</label>
+    <input type="text" x-model="form.street" placeholder="Numéro et rue" class="osc-input" :class="errors.street ? 'osc-input-error' : ''">
+    <p x-show="errors.street" class="osc-err">Requis</p>
+</div>
+<div class="osc-row">
+    <div class="osc-field">
+        <label class="osc-label">Ville *</label>
+        <input type="text" x-model="form.city" placeholder="Ville" class="osc-input" :class="errors.city ? 'osc-input-error' : ''">
+        <p x-show="errors.city" class="osc-err">Requis</p>
+    </div>
+    <div class="osc-field">
+        <label class="osc-label">Code postal *</label>
+        <input type="text" x-model="form.postcode" placeholder="10000" class="osc-input" :class="errors.postcode ? 'osc-input-error' : ''">
+        <p x-show="errors.postcode" class="osc-err">Requis</p>
+    </div>
+</div>
+<div class="osc-field">
+    <label class="osc-label">Pays</label>
+    <select x-model="form.country_id" @change="loadShippingMethods()" class="osc-select">
+        <option value="MA">Maroc</option>
+        <option value="FR">France</option>
+        <option value="BE">Belgique</option>
+        <option value="DZ">Algérie</option>
+        <option value="TN">Tunisie</option>
+    </select>
+</div>
+</div></div>
+
+<div class="osc-card">
+<div class="osc-card-header"><span class="osc-num">3</span><h2>Mode de livraison</h2></div>
+<div class="osc-card-body">
+<p x-show="errors.shipping" class="osc-err">Sélectionnez une méthode de livraison</p>
+<template x-if="shippingMethods.length === 0">
+    <p style="color:#6b7280;font-size:.875rem">Chargement...</p>
+</template>
+<template x-for="method in shippingMethods" :key="method.carrier_code + '_' + method.method_code">
+    <label class="osc-option" :class="form.shipping_method === method.carrier_code + '_' + method.method_code ? 'osc-option-active' : ''">
+        <input type="radio" :value="method.carrier_code + '_' + method.method_code" x-model="form.shipping_method" @change="selectShipping(method)" class="hidden">
+        <div class="osc-opt-inner">
+            <span>🚚</span>
+            <div>
+                <div class="osc-opt-name" x-text="method.carrier_title"></div>
+                <div class="osc-opt-desc" x-text="method.method_title"></div>
+            </div>
+            <span class="osc-opt-price" x-text="'€' + parseFloat(method.amount).toFixed(2)"></span>
+        </div>
+    </label>
+</template>
+</div></div>
+
+<div class="osc-card">
+<div class="osc-card-header"><span class="osc-num">4</span><h2>Mode de paiement</h2></div>
+<div class="osc-card-body">
+<label class="osc-option" :class="form.payment_method === 'checkmo' ? 'osc-option-active' : ''">
+    <input type="radio" x-model="form.payment_method" value="checkmo" class="hidden">
+    <div class="osc-opt-inner"><span>💳</span><div><div class="osc-opt-name">Chèque / Mandat</div><div class="osc-opt-desc">Paiement par chèque</div></div></div>
+</label>
+<label class="osc-option" :class="form.payment_method === 'free' ? 'osc-option-active' : ''">
+    <input type="radio" x-model="form.payment_method" value="free" class="hidden">
+    <div class="osc-opt-inner"><span>💵</span><div><div class="osc-opt-name">Paiement à la livraison</div><div class="osc-opt-desc">Payez en espèces</div></div></div>
+</label>
+</div></div>
+
+</div>
+
+<div class="osc-right">
+<div class="osc-summary">
+<h2 class="osc-sum-title">Résumé de commande</h2>
+<?php foreach ($items as $item): ?>
+<div class="osc-item">
+    <div>
+        <div class="osc-item-name"><?= $block->escapeHtml($item->getName()) ?></div>
+        <div class="osc-item-qty">Qté: <?= (int)$item->getQty() ?></div>
+    </div>
+    <div class="osc-item-price">€<?= number_format($item->getRowTotal(), 2) ?></div>
+</div>
+<?php endforeach; ?>
+<div class="osc-totals">
+    <div class="osc-total-row"><span>Sous-total</span><span>€<?= number_format($subtotal, 2) ?></span></div>
+    <div class="osc-total-row"><span>Livraison</span><span x-text="'€' + shippingCost.toFixed(2)"></span></div>
+    <div class="osc-total-grand"><span>Total</span><span x-text="'€' + grandTotal"></span></div>
+</div>
+<button @click="placeOrder()" :disabled="loading" class="osc-btn-order">
+    <span x-show="!loading">🛒 Confirmer ma commande</span>
+    <span x-show="loading">Traitement...</span>
+</button>
+<p style="text-align:center;font-size:12px;color:#6b7280;margin-top:8px">🔒 Paiement 100% sécurisé</p>
+</div>
+</div>
+</div>
+</div>
+
+<style>
+.osc-page{max-width:1100px;margin:0 auto;padding:2rem 1rem}
+.osc-heading{font-size:1.75rem;font-weight:700;color:#111;text-align:center;margin-bottom:2rem}
+.osc-grid{display:grid;grid-template-columns:1fr 360px;gap:1.5rem;align-items:start}
+.osc-card{background:#fff;border:1px solid #e5e7eb;border-radius:12px;margin-bottom:1.25rem;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.osc-card-header{display:flex;align-items:center;gap:12px;padding:14px 20px;background:#f9fafb;border-bottom:1px solid #e5e7eb}
+.osc-card-header h2{font-size:.95rem;font-weight:600;color:#111;margin:0}
+.osc-num{width:28px;height:28px;background:#2563eb;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.8rem;flex-shrink:0}
+.osc-card-body{padding:20px}
+.osc-field{margin-bottom:1rem}
+.osc-label{display:block;font-size:.8rem;font-weight:500;color:#374151;margin-bottom:6px}
+.osc-input{width:100%;padding:10px 14px;border:1px solid #d1d5db;border-radius:8px;font-size:.875rem;outline:none;box-sizing:border-box;background:#fff;transition:border-color .15s}
+.osc-input:focus{border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.1)}
+.osc-input-error{border-color:#ef4444 !important}
+.osc-select{width:100%;padding:10px 14px;border:1px solid #d1d5db;border-radius:8px;font-size:.875rem;outline:none;box-sizing:border-box;background:#fff}
+.osc-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.osc-err{color:#ef4444;font-size:.75rem;margin-top:4px}
+.osc-option{display:block;border:2px solid #e5e7eb;border-radius:10px;padding:14px;margin-bottom:8px;cursor:pointer;transition:all .15s}
+.osc-option:hover{border-color:#93c5fd}
+.osc-option-active{border-color:#2563eb;background:#eff6ff}
+.osc-opt-inner{display:flex;align-items:center;gap:12px}
+.osc-opt-name{font-weight:600;font-size:.875rem;color:#111}
+.osc-opt-desc{font-size:.75rem;color:#6b7280}
+.osc-opt-price{margin-left:auto;font-weight:700;color:#2563eb}
+.osc-summary{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:20px;position:sticky;top:20px}
+.osc-sum-title{font-size:1rem;font-weight:700;color:#111;margin-bottom:1rem;padding-bottom:12px;border-bottom:1px solid #e5e7eb}
+.osc-item{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid #f3f4f6}
+.osc-item-name{font-size:.875rem;font-weight:500;color:#111}
+.osc-item-qty{font-size:.75rem;color:#6b7280;margin-top:3px}
+.osc-item-price{font-weight:600;color:#111}
+.osc-totals{margin-top:1rem}
+.osc-total-row{display:flex;justify-content:space-between;padding:6px 0;font-size:.875rem;color:#4b5563}
+.osc-total-grand{display:flex;justify-content:space-between;font-weight:700;font-size:1.05rem;color:#111;border-top:2px solid #e5e7eb;margin-top:8px;padding-top:12px}
+.osc-btn-order{width:100%;background:#2563eb;color:#fff;padding:14px;border:none;border-radius:10px;font-size:1rem;font-weight:600;cursor:pointer;margin-top:1.25rem;transition:all .2s}
+.osc-btn-order:hover{background:#1d4ed8}
+.osc-btn-order:disabled{opacity:.7;cursor:not-allowed}
+@media(max-width:768px){.osc-grid{grid-template-columns:1fr}.osc-row{grid-template-columns:1fr}}
+</style>
+</div>

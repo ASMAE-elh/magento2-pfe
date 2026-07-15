@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <tab id="cartware" translate="label" sortOrder="10">
+            <label>Cartware</label>
+        </tab>
+        <!-- Stock Notification section -->
+        <section id="carhartt_stocknotification" translate="label" sortOrder="150" showInDefault="1" showInWebsite="1"
+                 showInStore="1">
+            <label>Stock Notification</label>
+            <tab>cartware</tab>
+            <resource>Carhartt_StockNotification::config</resource>
+
+            <!-- General Settings -->
+            <group id="general" translate="label" type="text" sortOrder="10"
+                   showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <label>General Configuration</label>
+
+                <field id="enabled" translate="label" type="select" sortOrder="10"
+                       showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Enable Stock Notification</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Turn this feature ON or OFF for stock notification emails.</comment>
+                </field>
+
+                <field id="template_product_is_saleable" translate="label" type="select" sortOrder="20"
+                       showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Email template Product Is Saleable</label>
+                    <source_model>Magento\Config\Model\Config\Source\Email\Template</source_model>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>

@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Config/etc/system_file.xsd">
+    <system>
+        <section id="wb_onestepcheckout" translate="label" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>JCO Custom Checkout</label>
+            <tab>sales</tab>
+            <resource>WB_OneStepCheckout::config</resource>
+            <group id="general" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>General Settings</label>
+                <field id="enable" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="custom_note" translate="label" type="textarea" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Custom Note</label>
+                    <comment>Custom note to display on the checkout page.</comment>
+                </field>
+                <field id="success_message" translate="label" type="textarea" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Success Message</label>
+                    <comment>Success message to display on the checkout success page.</comment>
+                </field>
+                <field id="store_specific_success_message" translate="label" type="textarea" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Store Specific Success Message</label>
+                    <comment>Success message to display on the checkout success page for specific stores.</comment>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>

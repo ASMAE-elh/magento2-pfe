@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <default>
+        <chaymae_aichat>
+            <general>
+                <enabled>1</enabled>
+                <model>gpt-4o-mini</model>
+                <system_prompt>Tu es l'assistant virtuel de la boutique. Tu aides les clients a trouver des produits et a repondre a leurs questions sur le catalogue. Sois concis, poli, et base tes reponses uniquement sur les produits fournis dans le contexte.</system_prompt>
+            </general>
+        </chaymae_aichat>
+    </default>
+</config>

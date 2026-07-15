@@ -1,0 +1,231 @@
+<?php
+/** @var \Chaymae\AiChat\Block\Widget $block */
+/** @var \Magento\Framework\Escaper $escaper */
+
+if (!$block->isEnabled()) {
+    return;
+}
+?>
+<style>
+.chaymae-chat-scroll::-webkit-scrollbar {
+    width: 6px;
+}
+.chaymae-chat-scroll::-webkit-scrollbar-track {
+    background: #f5f5f5;
+}
+.chaymae-chat-scroll::-webkit-scrollbar-thumb {
+    background-color: #111;
+    border-radius: 3px;
+}
+.chaymae-chat-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: #111 #f5f5f5;
+}
+</style>
+<div x-data="chaymaeAiChat()" style="position:fixed;bottom:16px;right:16px;z-index:9999;font-family:Arial,sans-serif;">
+
+    <button
+        @click="open = !open"
+        style="display:flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:50%;background:#111;color:#fff;border:none;box-shadow:0 4px 12px rgba(0,0,0,0.25);cursor:pointer;"
+        aria-label="<?= $escaper->escapeHtmlAttr(__('Ouvrir le chat')) ?>"
+    >
+        <span x-show="!open" style="font-size:24px;">💬</span>
+        <span x-show="open" style="font-size:24px;">&times;</span>
+    </button>
+
+    <div
+        x-show="open"
+        x-cloak
+        style="position:absolute;bottom:64px;right:0;width:340px;height:480px;background:#fff;border-radius:8px;box-shadow:0 8px 30px rgba(0,0,0,0.3);border:1px solid #222;display:flex;flex-direction:column;overflow:hidden;"
+    >
+        <div style="background:#111;color:#fff;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;">
+            <span style="font-weight:600;"><?= $escaper->escapeHtml(__('Assistant boutique')) ?></span>
+            <button @click="open = false" style="background:none;border:none;color:#fff;font-size:18px;cursor:pointer;">&times;</button>
+        </div>
+
+        <div x-ref="scrollArea" class="chaymae-chat-scroll" style="height:340px;overflow-y:auto;padding:12px;background:#f5f5f5;box-sizing:border-box;">
+            <template x-if="messages.length === 0">
+                <p style="font-size:13px;color:#666;">
+                    <?= $escaper->escapeHtml(__('Bonjour ! Posez-moi une question ou envoyez une photo d\'un produit.')) ?>
+                </p>
+            </template>
+
+            <template x-for="(msg, index) in messages" :key="index">
+                <div :style="msg.role === 'user' ? 'display:flex;justify-content:flex-end;margin:6px 0;' : 'display:flex;justify-content:flex-start;margin:6px 0;'">
+                    <div
+                        x-show="!msg.image"
+                        :style="msg.role === 'user'
+                            ? 'max-width:85%;border-radius:8px;padding:8px 10px;font-size:13px;background:#111;color:#fff;white-space:pre-line;'
+                            : 'max-width:85%;border-radius:8px;padding:8px 10px;font-size:13px;background:#fff;border:1px solid #ccc;color:#222;white-space:pre-line;'"
+                        x-text="msg.text"
+                    ></div>
+                    <img
+                        x-show="msg.image"
+                        :src="msg.image"
+                        style="max-width:60%;border-radius:8px;border:1px solid #ccc;"
+                    />
+                </div>
+            </template>
+
+            <template x-if="products.length > 0">
+                <div style="margin-top:8px;">
+                    <template x-for="(p, index) in products" :key="index">
+                        <a :href="p.url" style="display:flex;justify-content:space-between;border:1px solid #ccc;border-radius:6px;padding:6px 8px;background:#fff;margin-bottom:4px;text-decoration:none;font-size:13px;">
+                            <span style="color:#222;" x-text="p.name"></span>
+                            <span style="color:#111;font-weight:700;" x-text="p.price"></span>
+                        </a>
+                    </template>
+                </div>
+            </template>
+
+            <div x-show="loading" style="font-size:13px;color:#999;font-style:italic;">
+                <?= $escaper->escapeHtml(__('L\'assistant reflechit...')) ?>
+            </div>
+        </div>
+
+        <form @submit.prevent="send" style="display:flex;border-top:1px solid #ddd;align-items:center;">
+            <label
+                style="padding:0 10px;cursor:pointer;color:#555;font-size:18px;"
+                :style="loading ? 'opacity:0.5;pointer-events:none;' : ''"
+                title="<?= $escaper->escapeHtmlAttr(__('Envoyer une photo')) ?>"
+            >
+                📷
+                <input type="file" accept="image/*" @change="onImageSelected" style="display:none;" :disabled="loading" />
+            </label>
+            <input
+                type="text"
+                x-model="input"
+                :disabled="loading"
+                placeholder="<?= $escaper->escapeHtmlAttr(__('Ecrivez votre message...')) ?>"
+                style="flex:1;padding:8px;border:none;outline:none;font-size:13px;"
+            />
+            <button
+                type="submit"
+                :disabled="loading || !input.trim()"
+                style="padding:0 16px;background:#111;color:#fff;border:none;font-size:13px;font-weight:600;cursor:pointer;height:40px;"
+            >
+                <?= $escaper->escapeHtml(__('Envoyer')) ?>
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function chaymaeAiChat() {
+        return {
+            open: false,
+            loading: false,
+            input: '',
+            messages: [],
+            products: [],
+
+            async send() {
+                const text = this.input.trim();
+                if (!text || this.loading) {
+                    return;
+                }
+
+                this.messages.push({ role: 'user', text });
+                this.input = '';
+                this.loading = true;
+                this.products = [];
+                this.scrollToBottom();
+
+                try {
+                    const response = await fetch('/rest/V1/chaymae-aichat/chat', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ message: text })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Request failed');
+                    }
+
+                    const rawString = await response.json();
+                    const data = JSON.parse(rawString);
+
+                    this.messages.push({ role: 'assistant', text: data.reply || '' });
+                    this.products = data.products || [];
+                } catch (e) {
+                    this.messages.push({
+                        role: 'assistant',
+                        text: "Desole, une erreur est survenue. Merci de reessayer."
+                    });
+                } finally {
+                    this.loading = false;
+                    this.scrollToBottom();
+                }
+            },
+
+            async onImageSelected(event) {
+                const file = event.target.files[0];
+                if (!file || this.loading) {
+                    return;
+                }
+
+                // Affiche un apercu de la photo envoyee dans la conversation
+                const previewUrl = URL.createObjectURL(file);
+                this.messages.push({ role: 'user', image: previewUrl });
+                this.loading = true;
+                this.products = [];
+                this.scrollToBottom();
+
+                try {
+                    const base64 = await this.fileToBase64(file);
+
+                    const response = await fetch('/rest/V1/chaymae-aichat/vision', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            imageBase64: base64,
+                            mimeType: file.type || 'image/jpeg'
+                        })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Request failed');
+                    }
+
+                    const rawString = await response.json();
+                    const data = JSON.parse(rawString);
+
+                    this.messages.push({ role: 'assistant', text: data.reply || '' });
+                    this.products = data.products || [];
+                } catch (e) {
+                    this.messages.push({
+                        role: 'assistant',
+                        text: "Desole, je n'ai pas pu analyser cette photo. Merci de reessayer."
+                    });
+                } finally {
+                    this.loading = false;
+                    event.target.value = '';
+                    this.scrollToBottom();
+                }
+            },
+
+            fileToBase64(file) {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = () => {
+                        // reader.result est de la forme "data:image/jpeg;base64,XXXXX"
+                        // on ne garde que la partie apres la virgule
+                        const base64 = reader.result.split(',')[1];
+                        resolve(base64);
+                    };
+                    reader.onerror = reject;
+                    reader.readAsDataURL(file);
+                });
+            },
+
+            scrollToBottom() {
+                this.$nextTick(() => {
+                    const el = this.$refs.scrollArea;
+                    if (el) {
+                        el.scrollTop = el.scrollHeight;
+                    }
+                });
+            }
+        };
+    }
+</script>

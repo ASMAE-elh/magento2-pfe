@@ -1,0 +1,26 @@
+{
+    "carhartt_stock_notification": {
+        "column": {
+            "entity_id": true,
+            "customer_id": true,
+            "customer_email": true,
+            "product_id": true,
+            "product_sku": true,
+            "store_id": true,
+            "status": true,
+            "created_at": true
+        },
+        "index": {
+            "CARHARTT_STOCK_NOTIFICATION_CUSTOMER_ID": true,
+            "CARHARTT_STOCK_NOTIFICATION_PRODUCT_ID": true,
+            "CARHARTT_STOCK_NOTIFICATION_STORE_ID": true,
+            "CARHARTT_STOCK_NOTIFICATION_CUSTOMER_EMAIL_PRODUCT_SKU_STATUS": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "CARHARTT_STOCK_NTFC_CSTR_ID_CSTR_ENTT_ENTT_ID": true,
+            "CARHARTT_STOCK_NTFC_PRD_ID_CAT_PRD_ENTT_ENTT_ID": true,
+            "CARHARTT_STOCK_NOTIFICATION_STORE_ID_STORE_STORE_ID": true
+        }
+    }
+}
