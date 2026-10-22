@@ -1,0 +1,25 @@
+<?php
+/**
+ * ASHFORD - Chaymae/hyva-child theme
+ * Custom footer copyright override + AI Chat widget injection
+ */
+declare(strict_types=1);
+use Magento\Theme\Block\Html\Footer;
+use Magento\Framework\Escaper;
+/** @var Footer $block */
+/** @var Escaper $escaper */
+?>
+<small class="text-sm text-gray-800 sm:ml-6 sm:mt-0 mt-4">
+    <span><?= $escaper->escapeHtml($block->getCopyright()) ?></span>
+</small>
+<?php
+$currentUrl = $block->getRequest()->getRequestUri();
+if (strpos($currentUrl, 'checkout') === false) {
+$aiChatBlock = $block->getLayout()->createBlock(
+    \Chaymae\AiChat\Block\Widget::class,
+    'chaymae.aichat.widget.inline',
+    ['data' => ['template' => 'Chaymae_AiChat::chat/widget.phtml']]
+);
+echo $aiChatBlock->toHtml();
+}
+?>

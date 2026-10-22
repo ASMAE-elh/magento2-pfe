@@ -101,7 +101,7 @@ cd app/
 
 ```
 bin/magento setup:install \
---base-url="http://chaymae.magento" \
+--base-url="http://ashford.local" \
 --db-host="mysql" \
 --db-name="chaymae_magento" \
 --db-user="root" \
@@ -218,16 +218,16 @@ sudo nano /etc/hosts
 ```
 Add:
 ```
-127.0.0.1 chaymae.magento
+127.0.0.1 ashford.local
 ```
 ---
 ## Notes
 
 `database name = chaymae_magento`
 
-`url = http://chaymae.magento/`
+`url = http://ashford.local/`
 
-`admin url = http://chaymae.magento/admin_6ecr29i`
+`admin url = http://ashford.local/admin_6ecr29i`
 
 - Admin uri (`admin_6ecr29i`) from env.php (backend/frontName)
 - CLI : `bin/magento info:adminuri`

@@ -19,3 +19,7 @@
 .idea/
 *.iml
 .DS_Store
+
+# Fichiers locaux sensibles
+/.env
+/chaymae_magento.sql

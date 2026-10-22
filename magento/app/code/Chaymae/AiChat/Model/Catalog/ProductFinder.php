@@ -38,7 +38,10 @@ class ProductFinder
         $collection = $this->collectionFactory->create();
         $collection->addAttributeToSelect(['name', 'price', 'description', 'image', 'small_image', 'thumbnail'])
             ->addAttributeToFilter('status', 1)
-            ->addUrlRewrite();
+            ->addAttributeToFilter('visibility', array('in' => array(2, 3, 4)))
+            ->addUrlRewrite()
+            ->addMinimalPrice()
+            ->addFinalPrice();
 
         $keywordConditions = [];
         foreach ($keywords as $word) {
@@ -78,7 +81,7 @@ class ProductFinder
             $results[] = [
                 'name' => $product->getName(),
                 'sku' => $product->getSku(),
-                'price' => $this->pricingHelper->currency($product->getPrice(), true, false),
+                'price' => $this->pricingHelper->currency($product->getData('min_price') ?: $product->getPrice(), true, false),
                 'url' => $product->getProductUrl(),
                 'image' => $this->buildImageUrl($product),
             ];

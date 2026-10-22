@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
+    <event name="controller_action_predispatch_onestepcheckout_index_index">
+        <observer name="chaymae_force_luma_on_checkout" instance="Chaymae\ThemeSwitcher\Observer\ForceLumaOnCheckout"/>
+    </event>
+</config>

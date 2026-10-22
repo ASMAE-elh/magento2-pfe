@@ -1,7 +1,10 @@
 <?php
 /** @var \Chaymae\AiChat\Block\Widget $block */
 /** @var \Magento\Framework\Escaper $escaper */
-
+$currentUrl = $block->getRequest()->getRequestUri();
+if (stripos($currentUrl, "checkout") !== false) {
+    return;
+}
 if (!$block->isEnabled()) {
     return;
 }

@@ -29,6 +29,10 @@
                     <label>Email template Product Is Saleable</label>
                     <source_model>Magento\Config\Model\Config\Source\Email\Template</source_model>
                 </field>
+                <field id="template_subscription_confirmation" translate="label" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Email template Subscription Confirmation</label>
+                    <source_model>Magento\Config\Model\Config\Source\Email\Template</source_model>
+                </field>
             </group>
         </section>
     </system>
